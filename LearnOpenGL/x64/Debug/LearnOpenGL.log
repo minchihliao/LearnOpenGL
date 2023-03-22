@@ -1,5 +1,2 @@
-﻿  LearnOpenGL.cpp
-  2_Triangle.cpp
-  Generating Code...
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+﻿  2_Triangle.cpp
   LearnOpenGL.vcxproj -> E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\x64\Debug\LearnOpenGL.exe
