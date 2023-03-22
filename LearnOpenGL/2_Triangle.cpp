@@ -1,4 +1,4 @@
-#include "2_Triangle.h"
+ï»¿#include "2_Triangle.h"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -9,14 +9,21 @@ void FrameBuffer_Size_CallBack_Triangle(GLFWwindow* window, int width, int heigh
 void ProcessInput_Triangle(GLFWwindow* window);
 
 float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f,
-     0.8f,0.8f,0.0f
+      //ç¬¬ä¸€å€‹ä¸‰è§’å½¢
+      -0.5f, -0.5f, 0.0f,   // 0
+      0.5f, -0.5f, 0.0f,  //  1
+      0.5f, 0.5f, 0.0f,  //  2
+      //ç¬¬äºŒå€‹ä¸‰è§’å½¢
+      //0.5f, -0.5f, 0.0f,  
+      //0.5f, 0.5f, 0.0f,   
+      -0.5f, 0.5f, 0.0f   // 3
 };
+// 0,1,2 2,3,1
 
+unsigned int indices[] = {
+    0,1,2,
+    2,3,0
+};
 
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
@@ -37,9 +44,9 @@ int	Triangle::Excute() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // ³z©úµøµ¡
+    // é€æ˜è¦–çª—
     //glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GL_TRUE);
-#pragma region ³Ğ«Ø¤@­Óµøµ¡
+#pragma region å‰µå»ºä¸€å€‹è¦–çª—
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
@@ -48,7 +55,7 @@ int	Triangle::Excute() {
 }
     glfwMakeContextCurrent(window);
 #pragma endregion
-#pragma region ªì©l¤Æ GLAD
+#pragma region åˆå§‹åŒ– GLAD
     //
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -57,17 +64,32 @@ int	Triangle::Excute() {
     }
     glViewport(0, 0, 800, 600);
 #pragma endregion
+    //è¨­å®šé‹è¡Œä¸­ç‹€æ…‹
 
-    //«Å§i VAO
+    //èƒŒé¢å‰”é™¤
+    //glEnable(GL_CULL_FACE);
+    //glCullFace(GL_BACK);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    //å®£å‘Š VAO
     unsigned int VAO; //VAO[10]
     glGenVertexArrays(1, &VAO); //(10,VAO)
     glBindVertexArray(VAO);
 
-    //«Å§iVBO
+    //å®£å‘ŠVBO
     unsigned int VBO;
     glGenBuffers(1,&VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+
+    //å®£å‘ŠEBO
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 
     //compile vertect shader
     unsigned int vertexShader;
@@ -94,32 +116,34 @@ int	Triangle::Excute() {
 
 
 
-    //Call back function - ·íµ¡¤f½Õ¾ã¤j¤pªº®É­Ô½Õ¥Î³o­Ó¨ç¼Æ¡G
+    //Call back function - ç•¶çª—å£èª¿æ•´å¤§å°çš„æ™‚å€™èª¿ç”¨é€™å€‹å‡½æ•¸ï¼š
     glfwSetFramebufferSizeCallback(window, FrameBuffer_Size_CallBack_Triangle);
 
-    // Render Loop - §PÂ_ GLFW¬O§_³Q­n°h¥X
+    // Render Loop - åˆ¤æ–· GLFWæ˜¯å¦è¢«è¦é€€å‡º
     while (!glfwWindowShouldClose(window))
     {
-        //¿é¤J
+        //è¼¸å…¥
         ProcessInput_Triangle(window);
 
-        //´è¬V«ü¥O
-        //´è¬VÃC¦â
+        //æ¸²æŸ“æŒ‡ä»¤
+        //æ¸²æŸ“é¡è‰²
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        //²M°£ÃC¦â buffer
+        //æ¸…é™¤é¡è‰² buffer
         glClear(GL_COLOR_BUFFER_BIT);
 
         glBindVertexArray(VAO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glUseProgram(shaderProgram);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        //¥æ´«ÃC¦â½w½Ä¡A¥Î¨ÓÃ¸»sµøµ¡
+        //äº¤æ›é¡è‰²ç·©è¡ï¼Œç”¨ä¾†ç¹ªè£½è¦–çª—
         glfwSwapBuffers(window);
-        //ÀË¬d¦³¨S¦³Ä²µo¨Æ¥ó(Áä½L·Æ¹«)
+        //æª¢æŸ¥æœ‰æ²’æœ‰è§¸ç™¼äº‹ä»¶(éµç›¤æ»‘é¼ )
         glfwPollEvents();
     }
 
-    //ÄÀ©ñ¤§«e¤À°tªº¸ê·½
+    //é‡‹æ”¾ä¹‹å‰åˆ†é…çš„è³‡æº
     glfwTerminate();
     return 0;
 }
@@ -128,7 +152,7 @@ void FrameBuffer_Size_CallBack_Triangle(GLFWwindow* window, int width, int heigh
     glViewport(0, 0, width, heigh);
 }
 
-//¦bGLFW¤¤§PÂ_¬O§_«ö¤U ESC ¡A«ö¤UÃö³¬µøµ¡
+//åœ¨GLFWä¸­åˆ¤æ–·æ˜¯å¦æŒ‰ä¸‹ ESC ï¼ŒæŒ‰ä¸‹é—œé–‰è¦–çª—
 void ProcessInput_Triangle(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
