@@ -1,8 +1,7 @@
-﻿#include "1_CreateWindow.h"
-#include <iostream>
-#include "2_Triangle.h"
+﻿#include <iostream>
+#include "Program.h"
 
 int main() {
-	Triangle program;
+	Program program;
 	return program.Excute();
 }
