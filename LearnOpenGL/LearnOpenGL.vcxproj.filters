@@ -24,10 +24,31 @@
     <ClCompile Include="Program.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Program.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="fragmentSource.txt" />
+    <Text Include="vertexSource.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="container.jpg">
+      <Filter>資源檔</Filter>
+    </Image>
+    <Image Include="awesomeface.png">
+      <Filter>資源檔</Filter>
+    </Image>
   </ItemGroup>
 </Project>

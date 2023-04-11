@@ -1,37 +1,49 @@
 ﻿#include "Program.h"
+
+#define GLEW_STATIC
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include "Shader.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 
 void FrameBuffer_Size_CallBack_Triangle(GLFWwindow* window, int width, int heigh);
 void ProcessInput_Triangle(GLFWwindow* window);
 
 float vertices[] = {
-      //第一個三角形
-      -0.5f, -0.5f, 0.0f,   // 0
-      0.5f, -0.5f, 0.0f,  //  1
-      0.5f, 0.5f, 0.0f,  //  2
-      //第二個三角形
-      //0.5f, -0.5f, 0.0f,  
-      //0.5f, 0.5f, 0.0f,   
-      -0.5f, 0.5f, 0.0f   // 3
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+      ////第一個三角形
+      //-0.5f, -0.5f, 0.0f, 1.0f,0,0,  // 0
+      //0.5f, -0.5f, 0.0f,  0,1.0f,0,//  1
+      //0.5f, 0.5f, 0.0f,   0,0,1.0f,//  2
+      ////第二個三角形
+      ////0.5f, -0.5f, 0.0f,  
+      ////0.5f, 0.5f, 0.0f,   
+      //-0.5f, 0.5f, 0.0f, 0.3f,0.5f,0.7f  // 3
 };
 // 0,1,2 2,3,1
 
 unsigned int indices[] = {
-    0,1,2,
-    2,3,0
+    0, 1, 3, // first triangle
+    1, 2, 3  // second triangle
 };
 
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"layout (location = 1) in vec3 aColor; // 颜色变量的属性位置值为 1\n"
 "out vec4 vertexColor; \n"
 "void main()\n"
 "{\n"
 "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"   vertexColor = vec4(1.0,0,0,1.0); \n"
+"   vertexColor = vec4(aColor.x,aColor.y,aColor.z,1.0); \n"
 "}\0";
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
@@ -39,11 +51,12 @@ const char* fragmentShaderSource = "#version 330 core\n"
 "uniform vec4 ourColor; \n"
 "void main()\n"
 "{\n"
-"   FragColor =ourColor;\n"
+"   FragColor = vertexColor;\n"
 "}\n\0";
 
 
 int	Program::Excute() {
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -75,7 +88,9 @@ int	Program::Excute() {
     //glCullFace(GL_BACK);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    Shader* testShader = new Shader("vertexSource.txt", "fragmentSource.txt");
 
+     
     //宣告 VAO
     unsigned int VAO; //VAO[10]
     glGenVertexArrays(1, &VAO); //(10,VAO)
@@ -95,29 +110,72 @@ int	Program::Excute() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
-    //compile vertect shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
+//unsigned int vertexShader;
+////compile vertect shader
+//vertexShader = glCreateShader(GL_VERTEX_SHADER);
+//glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+//glCompileShader(vertexShader);
+// 
+////compile Fragment shader
+//unsigned int fragmentShader;
+//fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+//glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+//glCompileShader(fragmentShader);
+//
+//// Link vertex and fragment shader to program
+//unsigned int shaderProgram;
+//shaderProgram = glCreateProgram();
+//glAttachShader(shaderProgram, vertexShader);
+//glAttachShader(shaderProgram, fragmentShader);
+//glLinkProgram(shaderProgram);
 
-    //compile Fragment shader
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-
-    // Link vertex and fragment shader to program
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // 位置属性
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    // 颜色属性
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    //紋理屬性
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
+    //設置 TEXTUREA Buffer
+    unsigned int TexBufferA;
+    glGenTextures(1, &TexBufferA);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, TexBufferA);
+
+    //Load Texture
+    int width, height, nrChannel;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannel,0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        printf("load image failed");
+    }
+    stbi_image_free(data); 
+
+    //設置 TEXTUREA Buffer
+    unsigned int TexBufferB;
+    glGenTextures(1, &TexBufferB);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, TexBufferB);
+
+    //Load 第二張Texture
+    unsigned char* data2 = stbi_load("awesomeface.png", &width, &height, &nrChannel, 0);
+    if (data2) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        printf("load image failed");
+    }
+    stbi_image_free(data2);
 
 
     //Call back function - 當窗口調整大小的時候調用這個函數：
@@ -135,21 +193,32 @@ int	Program::Excute() {
         //清除顏色 buffer
         glClear(GL_COLOR_BUFFER_BIT);
 
+       
+
+
+ //準備匯到Shader的資料
+ //float timeValue = glfwGetTime();
+ //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+ //取得 VertexColor location
+ //int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+ //使用Shader
+ //glUseProgram(shaderProgram);
+ //把CPU資料利用Uniform匯到Shader中
+ //glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+       
+       
+        //把 Texture 綁到 VAO
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, TexBufferA);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, TexBufferB);
         glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
+        glUniform1i(glGetUniformLocation(testShader->ID, "ourTexture"), 0);
+        glUniform1i(glGetUniformLocation(testShader->ID, "ourFace"), 3);
 
-        //準備匯到Shader的資料
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        //取得 VertexColor location
-        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        //使用Shader
-        glUseProgram(shaderProgram);
-        //把CPU資料利用Uniform匯到Shader中
-        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
-
+        testShader->Use();
         //glDrawArrays(GL_TRIANGLES, 0, 6);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
