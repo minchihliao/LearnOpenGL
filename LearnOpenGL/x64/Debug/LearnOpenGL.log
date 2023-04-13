@@ -1,6 +1,6 @@
 ﻿  Program.cpp
-E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\LearnOpenGL\Program.cpp(41,1): warning C4566: character represented by universal-character-name '\u989C' cannot be represented in the current code page (950)
-E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\LearnOpenGL\Program.cpp(41,1): warning C4566: character represented by universal-character-name '\u53D8' cannot be represented in the current code page (950)
-E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\LearnOpenGL\Program.cpp(41,1): warning C4566: character represented by universal-character-name '\u5C5E' cannot be represented in the current code page (950)
-E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\LearnOpenGL\Program.cpp(41,1): warning C4566: character represented by universal-character-name '\u4E3A' cannot be represented in the current code page (950)
+E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\LearnOpenGL\Program.cpp(46,1): warning C4566: character represented by universal-character-name '\u989C' cannot be represented in the current code page (950)
+E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\LearnOpenGL\Program.cpp(46,1): warning C4566: character represented by universal-character-name '\u53D8' cannot be represented in the current code page (950)
+E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\LearnOpenGL\Program.cpp(46,1): warning C4566: character represented by universal-character-name '\u5C5E' cannot be represented in the current code page (950)
+E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\LearnOpenGL\Program.cpp(46,1): warning C4566: character represented by universal-character-name '\u4E3A' cannot be represented in the current code page (950)
   LearnOpenGL.vcxproj -> E:\Programing\OpenGL\LearnOpenGL\LearnOpenGL\x64\Debug\LearnOpenGL.exe

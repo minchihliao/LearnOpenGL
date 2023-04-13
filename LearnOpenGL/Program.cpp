@@ -10,6 +10,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
 
 void FrameBuffer_Size_CallBack_Triangle(GLFWwindow* window, int width, int heigh);
 void ProcessInput_Triangle(GLFWwindow* window);
@@ -56,6 +61,7 @@ const char* fragmentShaderSource = "#version 330 core\n"
 
 
 int	Program::Excute() {
+
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -177,13 +183,21 @@ int	Program::Excute() {
     }
     stbi_image_free(data2);
 
-
     //Call back function - 當窗口調整大小的時候調用這個函數：
     glfwSetFramebufferSizeCallback(window, FrameBuffer_Size_CallBack_Triangle);
+
+
+    // caclculate our transformation matrix here.
+    glm::mat4 trans;
+    trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0));
+     //trans = glm::rotate(trans,glm::radians(45.0f) ,glm::vec3(0, 0, 1.0f));
+    //trans = glm::scale(trans, glm::vec3(1.2f, 1.2f, 1.2f));
+    
 
     // Render Loop - 判斷 GLFW是否被要退出
     while (!glfwWindowShouldClose(window))
     {
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0, 0, 1.0f));
         //輸入
         ProcessInput_Triangle(window);
 
@@ -217,6 +231,7 @@ int	Program::Excute() {
 
         glUniform1i(glGetUniformLocation(testShader->ID, "ourTexture"), 0);
         glUniform1i(glGetUniformLocation(testShader->ID, "ourFace"), 3);
+        glUniformMatrix4fv(glGetUniformLocation(testShader->ID, "transform"),1,GL_FALSE, glm::value_ptr(trans));
 
         testShader->Use();
         //glDrawArrays(GL_TRIANGLES, 0, 6);
